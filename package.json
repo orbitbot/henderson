@@ -1,0 +1,40 @@
+{
+  "name": "henderson",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A tiny event emitter-based finite state machine",
+  "main": "henderson.js",
+  "scripts": {
+    "develop": "onchange 'henderson.js' 'test/*' -- npm run test:node",
+    "minify": "uglifyjs henderson.js -o henderson.min.js -c --m",
+    "test:node": "electron-mocha --reporter spec ./test",
+    "test:browser": "electron-mocha --renderer --preload test/browser-shim.js --preload henderson.js --reporter spec ./test",
+    "test:minified": "electron-mocha --renderer --preload test/browser-shim.js --preload henderson.min.js --reporter spec ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orbitbot/henderson.git"
+  },
+  "files": [
+    "henderson.js"
+  ],
+  "keywords": [
+    "statemachine",
+    "fsm",
+    "state",
+    "event"
+  ],
+  "author": "Patrik Johnson <patrik@zebros.fi>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/orbitbot/henderson/issues"
+  },
+  "homepage": "https://github.com/orbitbot/henderson#readme",
+  "devDependencies": {
+    "chai": "3.5.0",
+    "electron-mocha": "1.2.2",
+    "onchange": "2.4.0",
+    "sinon": "1.17.3",
+    "uglify-js": "2.6.2"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "henderson",
+  "description": "A tiny event emitter-based finite state machine",
+  "main": "henderson.js",
+  "authors": [
+    "Patrik Johnson <patrik@zebros.fi>"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "statemachine",
+    "fsm",
+    "state",
+    "event"
+  ],
+  "homepage": "https://github.com/orbitbot/henderson",
+  "moduleType": [
+    "globals"
+  ],
+  "ignore": [
+    ".*",
+    "*.json",
+    "README.md",
+    "node_modules",
+    "test"
+  ]
+}
