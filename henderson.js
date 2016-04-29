@@ -5,21 +5,6 @@
     return error;
   }
 
-  function series(tasks, params, check, cb) {
-    var results = [];
-    return tasks
-            .reduce(function(series, task, index) {
-              if (index === check) cb();
-              return series
-                      .then(task.apply(task, params))
-                      .then(results.push.bind(results));
-            },
-            Promise.resolve()
-    ).then(function () {
-      return results;
-    });
-  }
-
   function FSM(config) {
     var events = {};
     var fsm = {
@@ -50,10 +35,38 @@
       if (fsm.transitions[prev].indexOf(next) < 0)
         return Promise.reject(new ITE(prev, next), prev, next);
 
-      var pre = getCbs('after:' + prev).concat(getCbs('before:' + next));
-      var post = getCbs(next).concat(getCbs('*'));
+      var after = getCbs('after:' + prev);
+      var pre = getCbs('before:' + next);
+      var on = getCbs(next);
+      var post = getCbs('*');
 
-      return series(pre.concat(post), params, pre.length + 1, function() { fsm.current = next; });
+      function getPrefix(index) {
+        if (index < after.length) {
+          return [next];
+        } else if (index < after.length + pre.length + on.length) {
+          return [prev];
+        }
+        return [prev, next];
+      }
+      var stateChange = after.length + pre.length;
+      var results = [];
+      return after.concat(pre, on, post)
+              .reduce(function(series, task, index) {
+                if (index === stateChange)
+                  fsm.current = next;
+
+                return series
+                        .then(task.apply(task, getPrefix(index).concat(params)))
+                        .then(results.push.bind(results));
+              },
+              Promise.resolve()
+      ).then(function () {
+        return results;
+      // }).catch(function(err) {
+      //   fsm.current = prev;
+      //   return err;
+      //   return Promise.reject(err, results);
+      });
     };
 
     return fsm;
