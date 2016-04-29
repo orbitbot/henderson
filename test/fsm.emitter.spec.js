@@ -120,6 +120,6 @@ describe('FSM event emitter', function() {
       done();
     });
 
-    fsm.go.apply(undefined, ['red'].concat(params));
+    fsm.go.apply(fsm.go, ['red'].concat(params));
   });
 });

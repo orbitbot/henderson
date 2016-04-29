@@ -4,7 +4,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
 
-describe('FSM transitions', function() {
+describe.skip('FSM transitions', function() {
 
   function random(upper) {
     return Math.floor(Math.random() * upper) + 1;

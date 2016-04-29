@@ -4,7 +4,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
 
-describe('FSM Error handling', function() {
+describe.skip('FSM Error handling', function() {
 
   var fsm;
 
