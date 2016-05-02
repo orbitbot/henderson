@@ -22,8 +22,7 @@ describe('FSM event emitter', function() {
       states  : {
         green : ['red'],
         red   : ['green', 'red'],
-      },
-      error   : console.error.bind(console, 'Error: ')
+      }
     });
   });
 
@@ -104,22 +103,5 @@ describe('FSM event emitter', function() {
     fsm.on('red', cb(1));
     fsm.on('red', cb(2));
     fsm.go('red');
-  });
-
-  it('passes any parameters provided to the transition function call to the callbacks', function(done) {
-    var params = range(random(15)).map(function() {
-      return Math.random();
-    });
-
-    fsm.on('red', function(prev, fst) {
-      prev.should.equal('green');
-      arguments.length.should.equal(params.length + 1);
-      for (i = 0; i < params.length; ++i) {
-        params[i].should.equal(arguments[i + 1]);
-      }
-      done();
-    });
-
-    fsm.go.apply(fsm.go, ['red'].concat(params));
   });
 });
