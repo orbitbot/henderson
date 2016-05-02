@@ -4,7 +4,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
 
-describe.skip('FSM transitions', function() {
+describe('FSM transitions', function() {
 
   function random(upper) {
     return Math.floor(Math.random() * upper) + 1;
@@ -22,10 +22,15 @@ describe.skip('FSM transitions', function() {
     });
   });
 
-  it('updates the current state on transitions', function() {
+  it('updates the current state on transitions', function(done) {
     fsm.current.should.equal('green');
-    fsm.go('red');
-    fsm.current.should.equal('red');
+
+    fsm.go('red')
+      .then(function() {
+        fsm.current.should.equal('red');
+        done();
+      })
+      .catch(done);
   });
 
   it('emits an event when changing to the next state', function(done) {
@@ -63,14 +68,19 @@ describe.skip('FSM transitions', function() {
   });
 
   it('changes the state after the "after:" and "before:" events but before the main event', function(done) {
+    var spy = sinon.spy();
     fsm.on('after:green', function() {
+      spy();
       fsm.current.should.equal('green');
     });
     fsm.on('before:red', function() {
+      spy();
       fsm.current.should.equal('green');
     });
     fsm.on('red', function() {
+      spy();
       fsm.current.should.equal('red');
+      spy.callCount.should.equal(3);
       done();
     });
     fsm.go('red');

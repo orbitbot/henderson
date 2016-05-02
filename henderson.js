@@ -40,17 +40,14 @@
       var on = getCbs(next);
       var post = getCbs('*');
 
+      var beforePost = after.concat(pre, on);
       function getPrefix(index) {
-        if (index < after.length) {
-          return [next];
-        } else if (index < after.length + pre.length + on.length) {
-          return [prev];
-        }
-        return [prev, next];
+        return (index < after.length ? [next] : index < beforePost.length ? [prev] : [prev, next]);
       }
+
       var stateChange = after.length + pre.length;
       var results = [];
-      return after.concat(pre, on, post)
+      return beforePost.concat(post)
               .reduce(function(series, task, index) {
                 if (index === stateChange)
                   fsm.current = next;
@@ -61,6 +58,7 @@
               },
               Promise.resolve()
       ).then(function () {
+        fsm.current = next;
         return results;
       // }).catch(function(err) {
       //   fsm.current = prev;
