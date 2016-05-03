@@ -2,6 +2,8 @@
   function ITE(prev, next) {
     var error = Error.call(this, 'Transition from ' + prev + ' to ' + next + ' is not allowed');
     error.name = 'IllegalTransitionException';
+    error.prev = prev;
+    error.attempt = next;
     return error;
   }
 
@@ -33,7 +35,7 @@
       var params = Array.prototype.slice.call(arguments, 1);
 
       if (fsm.transitions[prev].indexOf(next) < 0)
-        return Promise.reject(new ITE(prev, next), prev, next);
+        return Promise.reject(new ITE(prev, next));
 
       var after = getCbs('after:' + prev);
       var pre = getCbs('before:' + next);
@@ -46,26 +48,22 @@
       }
 
       var stateChange = after.length + pre.length;
-      var results = [];
-      return beforePost.concat(post)
-              .reduce(function(series, task, index) {
-                if (index === stateChange)
-                  fsm.current = next;
 
-                return series
-                        .then(task.apply(task, getPrefix(index).concat(params)))
-                        .then(results.push.bind(results));
-              },
-              Promise.resolve()
-      ).then(function () {
-        fsm.current = next;
-        return results;
-      // }).catch(function(err) {
-      //   fsm.current = prev;
-      //   return err;
-      //   return Promise.reject(err, results);
+      return new Promise(function(resolve, reject) {
+        beforePost
+          .concat(post)
+          .reduce(function(series, task, index) {
+              if (index === stateChange)
+                fsm.current = next;
+
+              return series.then(task.apply(task, getPrefix(index).concat(params)))
+            }, Promise.resolve())
+          .then(function () {
+            fsm.current = next;
+            resolve();
+          });
       });
-    };
+    }
 
     return fsm;
   }
