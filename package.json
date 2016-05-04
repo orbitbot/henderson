@@ -1,8 +1,7 @@
 {
   "name": "henderson",
-  "version": "1.0.0",
-  "private": true,
-  "description": "A tiny event emitter-based finite state machine",
+  "version": "0.9.0",
+  "description": "A tiny event emitter-based finite state machine with promises",
   "main": "henderson.js",
   "scripts": {
     "develop": "onchange 'henderson.js' 'test/*' -- npm run test:node",
@@ -16,13 +15,16 @@
     "url": "git+https://github.com/orbitbot/henderson.git"
   },
   "files": [
-    "henderson.js"
+    "henderson.js",
+    "henderson.min.js"
   ],
   "keywords": [
     "statemachine",
     "fsm",
     "state",
-    "event"
+    "event",
+    "promise",
+    "promises"
   ],
   "author": "Patrik Johnson <patrik@zebros.fi>",
   "license": "ISC",
