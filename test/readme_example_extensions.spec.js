@@ -4,7 +4,7 @@ var chai = require('chai');
 var should = chai.should();
 var sinon = require('sinon');
 
-describe.skip('Example extensions', function() {
+describe('Example extensions', function() {
 
   var fsm;
 
@@ -49,19 +49,23 @@ describe.skip('Example extensions', function() {
       fsm.cannot('yellow').should.equal(true);
     });
 
-    it('fsm.is', function() {
+    it('fsm.is', function(done) {
       fsm.is('green').should.equal(true);
       fsm.is('red').should.equal(false);
-      fsm.go('red');
-      fsm.is('yellow').should.equal(false);
-      fsm.is('green').should.equal(false);
-      fsm.is('red').should.equal(true);
+      fsm.go('red').then(function() {
+        fsm.is('yellow').should.equal(false);
+        fsm.is('green').should.equal(false);
+        fsm.is('red').should.equal(true);
+        done();
+      });
     });
 
-    it('fsm.allowed', function() {
+    it('fsm.allowed', function(done) {
       fsm.allowed().should.contain.members(['red']);
-      fsm.go('red');
-      fsm.allowed().should.contain.members(['red', 'green']);
+      fsm.go('red').then(function() {
+        fsm.allowed().should.contain.members(['red', 'green']);
+        done();
+      });
     });
   });
 
@@ -109,20 +113,24 @@ describe.skip('Example extensions', function() {
       }
     });
 
-    it('fsm.add', function() {
+    it('fsm.add', function(done) {
       fsm.add('yellow', ['green', 'red'], ['red']);
-      fsm.go('yellow');
-      fsm.current.should.equal('yellow');
+      fsm.go('yellow')
+        .then(function() {
+          fsm.current.should.equal('yellow');
+          done();
+      });
     });
 
-    it('fsm.remove', function() {
+    it('fsm.remove', function(done) {
       fsm.remove('red');
-      try {
-        fsm.go('red');
-      } catch (e) {
-        e.name.should.equal('IllegalTransitionException');
-      }
-      fsm.current.should.equal('green');
+      fsm.go('red')
+        .then(done)
+        .catch(function(e) {
+          e.name.should.equal('IllegalTransitionException');
+          fsm.current.should.equal('green');
+          done();
+        });
     });
   });
 
@@ -137,11 +145,16 @@ describe.skip('Example extensions', function() {
       };
     });
 
-    it('stay at terminal state', function() {
-      fsm.go('red');
-      fsm.go('red');
-      fsm.go('green').should.equal(false);
-      fsm.current.should.equal('red');
+    it('stay at terminal state', function(done) {
+      fsm.go('red')
+        .then(function() {
+          return fsm.go('red');
+        })
+        .then(function() {
+          fsm.go('green').should.equal(false);
+          fsm.current.should.equal('red');
+          done();
+        });
     });
   });
 });
