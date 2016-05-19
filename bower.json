@@ -10,7 +10,8 @@
     "statemachine",
     "fsm",
     "state",
-    "event"
+    "event",
+    "promise"
   ],
   "homepage": "https://github.com/orbitbot/henderson",
   "moduleType": [
