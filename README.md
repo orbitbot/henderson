@@ -38,7 +38,7 @@ state
   .on('after:start', function(next) {
     console.log('Going to ' + next);
   })
-  .on('end', function(param) {
+  .on('end', function(prev, param) {
     return new Promise(function(resolve) {
       setTimeout(function() {
         console.log('Now at end, 2 + 2 = ' + param);
@@ -52,7 +52,7 @@ state.go('end', 2 + 2)
     console.log('Transition finished!');
   });
 
-state.reset = state.go.bind('end');
+state.reset = state.go.bind(state, 'start');
 state.reset('foo');
 ```
 
