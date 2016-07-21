@@ -49,20 +49,21 @@
 
       var stateChange = after.length + pre.length;
 
-      return new Promise(function(resolve, reject) {
-        beforePost
-          .concat(post)
-          .reduce(function(series, task, index) {
-              if (index === stateChange)
-                fsm.current = next;
+      return beforePost
+        .concat(post)
+        .reduce(function(series, task, index) {
+          var args = getPrefix(index).concat(params);
+          return series.then(function() {
+            if (index === stateChange) {
+              fsm.current = next;
+            }
 
-              return series.then(task.apply(task, getPrefix(index).concat(params)))
-            }, Promise.resolve())
-          .then(function () {
-            fsm.current = next;
-            resolve();
+            return task.apply(task, args);
           });
-      });
+        }, Promise.resolve())
+        .then(function () {
+          fsm.current = next;
+        })
     }
 
     return fsm;

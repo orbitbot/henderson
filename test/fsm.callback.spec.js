@@ -3,6 +3,7 @@ if (typeof window === 'undefined')
 var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
+var expect = chai.expect;
 
 describe('FSM event callbacks', function() {
 
@@ -82,4 +83,42 @@ describe('FSM event callbacks', function() {
 
     fsm.go.apply(fsm.go, ['red'].concat(params));
   });
+
+  it('runs callbacks in order', function(done) {
+    var count = 0;
+    fsm
+      .on('after:green', function() {
+        expect(count).to.equal(0)
+        return promiseDelay(function () {
+          count++;
+        }, 1);
+      })
+      .on('before:red', function() {
+        expect(count).to.equal(1, 'should run after previous is done')
+        return promiseDelay(function () {
+          count++;
+        }, 1);
+      })
+      .on('red', function() {
+        expect(count).to.equal(2);
+      })
+
+    fsm.go('red')
+      .then(function() {
+        done();
+      })
+      .catch(done);
+  });
 });
+
+function promiseDelay (fn, delay) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      try {
+        resolve(fn());
+      } catch(error) {
+        reject(error);
+      }
+    }, delay)
+  })
+}

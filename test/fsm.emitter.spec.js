@@ -26,49 +26,65 @@ describe('FSM event emitter', function() {
     });
   });
 
-  it('supports registering callbacks that will be fired when matching transitions occur', function() {
+  it('supports registering callbacks that will be fired when matching transitions occur', function(done) {
     var spy = sinon.spy();
 
     fsm.on('red', spy);
-    fsm.go('red');
-
-    spy.callCount.should.equal(1);
+    fsm.go('red')
+      .then(function () {
+        spy.callCount.should.equal(1);
+        done();
+      })
+      .catch(done);
   });
 
-  it('supports de-registering named callback functions', function() {
+  it('supports de-registering named callback functions', function(done) {
     var spy = sinon.spy();
 
     fsm.on('red', spy);
-    fsm.go('red');
-    fsm.unbind('red', spy);
-    fsm.go('red');
-
-    spy.callCount.should.equal(1);
+    fsm.go('red')
+      .then(function () {
+        fsm.unbind('red', spy);
+        return fsm.go('red');
+      })
+      .then(function () {
+        spy.callCount.should.equal(1);
+        done();
+      })
+      .catch(done);
   });
 
-  it('does not remove unrelated callbacks if unbind is called with a method not registered', function() {
+  it('does not remove unrelated callbacks if unbind is called with a method not registered', function(done) {
     var spy = sinon.spy();
 
     fsm.on('red', spy);
     fsm.unbind('red', function() {});
-    fsm.go('red');
-
-    spy.callCount.should.equal(1);
+    fsm.go('red')
+      .then(function () {
+        spy.callCount.should.equal(1);
+        done();
+      })
+      .catch(done);
   });
 
-  it('fires only callbacks matching the event', function() {
+  it('fires only callbacks matching the event', function(done) {
     var fst = sinon.spy();
     var snd = sinon.spy();
     fsm.on('red', fst);
     fsm.on('green', snd);
 
-    fsm.go('red');
-    fst.callCount.should.equal(1);
-    snd.called.should.equal(false);
-
-    fsm.go('green');
-    fst.callCount.should.equal(1);
-    snd.callCount.should.equal(1);
+    fsm.go('red')
+      .then(function () {
+        fst.callCount.should.equal(1);
+        snd.called.should.equal(false);
+        return fsm.go('green');
+      })
+      .then(function () {
+        fst.callCount.should.equal(1);
+        snd.callCount.should.equal(1);
+        done();
+      })
+      .catch(done);
   });
 
   it('supports registering any number of callbacks for a single event', function() {
