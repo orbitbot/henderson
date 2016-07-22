@@ -146,4 +146,25 @@ describe('FSM transitions', function() {
       })
       .catch(done);
   });
+
+  it('aborts a transition if a callback returns a rejected promise, subsequent callbacks are not called', function(done) {
+    var before = sinon.spy();
+    var after = sinon.spy();
+
+    fsm.on('red', [
+      before,
+      Promise.reject('interrupted'),
+      after
+    ]);
+
+    fsm.go('red')
+      .then(function() {
+        done('Reached transition success');
+      })
+      .catch(function() {
+        before.called.should.equal(true);
+        after.called.should.equal(false);
+        done();
+      });
+  });
 });
