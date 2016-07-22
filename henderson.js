@@ -50,7 +50,7 @@
       var stateChange = after.length + pre.length;
 
       return beforePost
-        .concat(post)
+        .concat(post, function ensureStateChange() {})
         .reduce(function(series, task, index) {
           var args = getPrefix(index).concat(params);
           return series.then(function() {
@@ -60,10 +60,7 @@
 
             return task.apply(task, args);
           });
-        }, Promise.resolve())
-        .then(function () {
-          fsm.current = next;
-        })
+        }, Promise.resolve());
     }
 
     return fsm;
