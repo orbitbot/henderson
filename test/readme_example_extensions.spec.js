@@ -80,14 +80,19 @@ describe('Example extensions', function() {
       };
     });
 
-    it('fsm.once', function() {
+    it('fsm.once', function(done) {
       var spy = sinon.spy();
 
       fsm.once('red', spy);
-      fsm.go('red');
-      fsm.go('red');
-
-      spy.callCount.should.equal(1);
+      fsm.go('red')
+        .then(function () {
+          return fsm.go('red');
+        })
+        .then(function () {
+          spy.callCount.should.equal(1);
+          done();
+        })
+        .catch(done);
     });
   });
 

@@ -86,15 +86,25 @@ describe('FSM transitions', function() {
     fsm.go('red');
   });
 
-  it('fires the "all" event on every transition', function() {
+  it('fires the "all" event on every transition', function(done) {
     var spy = sinon.spy();
     var rnd = random(15);
+    var promises = [];
 
     fsm.on('*', spy);
     for (var i = 0; i < rnd; ++i) {
-      fsm.go( i % 2 ? 'green' : 'red' );
+      promises.push(function () {
+        return fsm.go(fsm.current === 'red' ? 'green' : 'red')
+      });
     }
 
-    spy.callCount.should.equal(rnd);
+    return promises.reduce(function(series, task) {
+      return series.then(task)
+    }, Promise.resolve())
+      .then(function () {
+        spy.callCount.should.equal(rnd);
+        done();
+      })
+      .catch(done);
   });
 });
