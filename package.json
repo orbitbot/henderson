@@ -1,6 +1,6 @@
 {
   "name": "henderson",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A tiny event emitter-based finite state machine with promises",
   "main": "henderson.js",
   "scripts": {
