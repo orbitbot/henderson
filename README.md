@@ -102,7 +102,7 @@ Given `var fsm = new StateMachine(config)`,
 
 Transitions the state machine to `state` and causes any registered callbacks for this transition (including `before:`, `after:` and wildcard callbacks) to be triggered. All parameters after `state` are passed on to each callback along with the states involved in the transition, see the [Event callback API](github.com/orbitbot/pastafarian/blob/master/README.md#event-callback-api) for the exact signatures.
 
-`fsm.go` returns a promise that will be resolved when all the callbacks registered for the transition have finished. If you want to wait for the completion of some functionality in a callback before the next is processed, return a promise in the callback function.
+`fsm.go` returns a promise that will be resolved when all the callbacks registered for the transition have finished. All registered functions will run in strict order, if a callback returns a promise the subsequent callback will not be run before the previous promise is resolved. If a callback returns a rejected promise, the subsequent registered functions will not be called. The statemachine may however have already transitioned to the new `state`, depending on which transition event the callbacks have been registered to, and state rollback should be taken care of by library users as appropriate.
 
 <br>
 
@@ -126,6 +126,19 @@ The exception is generated inside the library, but in modern environments it sho
 ### Requirements
 
 `henderson` internally uses promises and expects an implementation to be available with `new Promise(function(resolve, reject) { ... })`. Otherwise, an environment providing ES5-support is enough (Array.indexOf and Array.reduce are used internally).
+
+<br>
+
+### Changelog
+
+**2.0.0**
+
+- #1 : fix buggy Promise chaining logic during state transitions, registered callbacks are run in strict order and the whole chain will be rejected if a callback returns a rejected promise
+- #2 : `.on / .bind` supports registering both a single callback function and an array of callbacks
+
+**1.0.0**
+
+- initial release
 
 <br>
 
