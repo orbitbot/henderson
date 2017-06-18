@@ -3,7 +3,6 @@
 
 [![Build Status](https://travis-ci.org/orbitbot/henderson.svg?branch=master)](https://travis-ci.org/orbitbot/henderson)
 ![Uncompressed size](https://badge-size.herokuapp.com/orbitbot/henderson/master/henderson.js?color=red)
-![minfied size](https://badge-size.herokuapp.com/orbitbot/henderson/master/henderson.min.js?color=yellow&label=minfied size)
 ![minfied+gzipped size](https://badge-size.herokuapp.com/orbitbot/henderson/master/henderson.min.js?label=gzipped.min&compression=gzip)
 
 A tiny finite state machine library with asynchronous state transfers, based on an event-emitter. `henderson` is the promise-based version of [`pastafarian`](https://github.com/orbitbot/pastafarian).
